@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1:1 Meeting Checklist — BairesDev</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080C14;
+  --surface: #0F1520;
+  --card: #141D2E;
+  --card-hover: #1A2540;
+  --border: rgba(255,255,255,0.07);
+  --border-active: rgba(255,255,255,0.15);
+  --accent: #00D4A0;
+  --accent-dim: rgba(0,212,160,0.12);
+  --accent-border: rgba(0,212,160,0.3);
+  --text: #F0F4FF;
+  --text-secondary: #7A8BA0;
+  --text-muted: #3A4860;
+  --danger: #FF5A5A;
+  --danger-bg: rgba(255,90,90,0.1);
+  --warning: #F5A623;
+  --warning-bg: rgba(245,166,35,0.1);
+  --success: #00D4A0;
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── Header ── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.topbar-logo img { height: 24px; filter: brightness(0) invert(1); }
+.topbar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-active);
+}
+.topbar-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+.api-key-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 6px 4px 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.api-key-pill:hover { border-color: var(--border-active); }
+.api-key-pill span { font-size: 12px; color: var(--text-secondary); }
+.api-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  transition: background 0.2s;
+}
+.api-dot.ok { background: var(--accent); }
+.api-key-pill .edit-icon {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── Layout ── */
+.layout { display: flex; min-height: calc(100vh - 60px); }
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sidebar-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+.new-btn {
+  width: 100%;
+  height: 38px;
+  background: var(--accent);
+  color: #080C14;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  transition: opacity 0.15s;
+}
+.new-btn:hover { opacity: 0.85; }
+.meeting-item {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.12s;
+  border: 1px solid transparent;
+}
+.meeting-item:hover { background: var(--card); }
+.meeting-item.active {
+  background: var(--card);
+  border-color: var(--border-active);
+}
+.mi-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.mi-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+.mi-badge {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.pb-wrap { height: 3px; background: var(--bg); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.pb { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
+
+/* ── Main ── */
+.main { flex: 1; padding: 2rem; max-width: 780px; overflow-y: auto; }
+.main-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+.main-empty .big-icon { font-size: 40px; margin-bottom: 8px; }
+.main-empty p { font-size: 14px; }
+
+/* ── Meeting header ── */
+.meeting-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 2rem;
+}
+.avatar-lg {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.mh-name { font-size: 20px; font-weight: 600; color: var(--text); }
+.mh-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.mh-progress {
+  margin-left: auto;
+  text-align: right;
+}
+.mh-pct { font-size: 22px; font-weight: 600; color: var(--accent); font-family: 'DM Mono', monospace; }
+.mh-label { font-size: 11px; color: var(--text-muted); }
+
+/* ── Cards ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+}
+.card-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Transcript section ── */
+.transcript-area {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+  transition: border-color 0.15s;
+}
+.transcript-area:focus { border-color: var(--border-active); }
+.transcript-area::placeholder { color: var(--text-muted); }
+.transcript-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+.btn-outline {
+  height: 34px;
+  padding: 0 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-outline:hover { background: var(--card-hover); color: var(--text); border-color: var(--border-active); }
+.btn-accent {
+  height: 34px;
+  padding: 0 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #080C14;
+  cursor: pointer;
+  transition: opacity 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-accent:hover { opacity: 0.85; }
+.btn-accent:disabled { opacity: 0.35; cursor: not-allowed; }
+.file-label {
+  height: 34px;
+  padding: 0 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.file-label:hover { background: var(--card-hover); color: var(--text); }
+.file-input { display: none; }
+
+.insights-box {
+  margin-top: 12px;
+  padding: 14px;
+  background: var(--bg);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.insights-box strong { color: var(--accent); font-weight: 600; }
+
+/* ── Section ── */
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 1.5rem 0 0.6rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--accent-border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-label:first-of-type { margin-top: 0; }
+
+/* ── Check item ── */
+.check-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.check-item:last-of-type { border-bottom: none; padding-bottom: 0; }
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.check-item input[type=checkbox] {
+  width: 17px; height: 17px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+.check-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  flex: 1;
+  line-height: 1.5;
+}
+.check-item.checked .check-label {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+/* ── Quick replies ── */
+.quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 29px;
+  margin-bottom: 8px;
+}
+.qr-btn {
+  padding: 4px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  border: 1px solid var(--border-active);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.qr-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+.qr-btn.selected {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: var(--accent-border);
+  font-weight: 500;
+}
+
+/* ── Note input ── */
+.note-input {
+  margin-left: 29px;
+  width: calc(100% - 29px);
+  padding: 7px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  outline: none;
+  resize: none;
+  min-height: 34px;
+  line-height: 1.5;
+  transition: border-color 0.15s;
+}
+.note-input:focus { border-color: var(--border-active); }
+.note-input::placeholder { color: var(--text-muted); }
+
+/* ── Closing ── */
+.closing {
+  margin-top: 1rem;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  border-left: 3px solid var(--accent);
+  font-style: italic;
+}
+
+/* ── Summary ── */
+.btn-summary {
+  width: 100%;
+  height: 44px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 1rem;
+  background: var(--accent);
+  color: #080C14;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-summary:hover { opacity: 0.85; }
+.btn-summary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.summary-box {
+  margin-top: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-lg);
+}
+.summary-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.summary-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'DM Mono', monospace;
+}
+.copy-btn {
+  margin-top: 12px;
+  height: 34px;
+  padding: 0 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius);
+  background: var(--accent-dim);
+  color: var(--accent);
+  cursor: pointer;
+  transition: opacity 0.12s;
+}
+.copy-btn:hover { opacity: 0.8; }
+
+.err-box {
+  margin-top: 10px;
+  padding: 12px;
+  background: var(--danger-bg);
+  border: 1px solid rgba(255,90,90,0.3);
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  color: var(--danger);
+  word-break: break-all;
+}
+
+.reset-btn {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 0;
+  text-decoration: underline;
+  margin-top: 6px;
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+}
+.reset-btn:hover { color: var(--danger); }
+
+/* ── Spinner ── */
+.spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(8,12,20,0.3);
+  border-top-color: #080C14;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Modal ── */
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 440px;
+}
+.modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.modal p { font-size: 13px; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.6; }
+.modal input, .modal .name-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  background: var(--bg);
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius);
+  color: var(--text);
+  outline: none;
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
+}
+.modal input:focus { border-color: var(--accent-border); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* ── New meeting modal name input ── */
+.name-input-wrap { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.input-label { font-size: 11px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 3px; }
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .sidebar { display: none; }
+  .main { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <img src="https://assets.bairesdev.com/image/upload/www/static/bairesdev-logo_mdbbsh.svg" alt="BairesDev" onerror="this.style.display='none';document.getElementById('bd-text').style.display='block'">
+    <span id="bd-text" style="display:none;font-weight:700;font-size:16px;letter-spacing:-0.02em">BairesDev</span>
+    <div class="topbar-divider"></div>
+    <span class="topbar-title">1:1 Meeting Checklist</span>
+  </div>
+  <div class="api-key-pill" onclick="openApiModal()">
+    <span>API Key</span>
+    <div class="api-dot" id="api-dot"></div>
+    <span class="edit-icon">edit</span>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <button class="new-btn" onclick="openNewMeetingModal()">+ New meeting</button>
+    <div class="sidebar-header">Meetings</div>
+    <div id="meeting-list"></div>
+  </div>
+
+  <!-- Main -->
+  <div class="main" id="main-area">
+    <div class="main-empty">
+      <div class="big-icon">💬</div>
+      <p>Select a meeting or create a new one<br>to get started.</p>
+    </div>
+  </div>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal-bg" id="api-modal" style="display:none">
+  <div class="modal">
+    <h2>Anthropic API Key</h2>
+    <p>Required to generate AI summaries and analyze transcripts. Your key is stored locally in your browser and never sent anywhere except Anthropic's API.</p>
+    <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeApiModal()">Cancel</button>
+      <button class="btn-accent" onclick="saveApiKey()">Save key</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Meeting Modal -->
+<div class="modal-bg" id="new-meeting-modal" style="display:none">
+  <div class="modal">
+    <h2>New 1:1 Meeting</h2>
+    <p>Enter the SE's name to create a new meeting checklist.</p>
+    <div class="name-input-wrap">
+      <span class="input-label">SE Name</span>
+      <input type="text" id="se-name-input" placeholder="e.g. Melissa Tavarez" class="name-input" autocomplete="off">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeNewMeetingModal()">Cancel</button>
+      <button class="btn-accent" onclick="createMeeting()">Create meeting</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Data ────────────────────────────────────────────────────────────────────
+const SECTIONS = [
+  { label: "Apertura", items: [
+    { key: "Give feedback from the focal point", replies: ["Client is happy", "Client has concerns", "No feedback from FP yet"] }
+  ]},
+  { label: "Asignación y equipo", items: [
+    { key: "Monitoring/coordination responsibilities", replies: ["No new responsibilities", "New responsibilities assigned"] },
+    { key: "Blockers or issues", replies: ["No blockers", "Has a blocker — being addressed", "Has a blocker — needs support"] },
+    { key: "Feeling about the project", replies: ["Feeling good", "Feeling motivated", "Has some concerns"] },
+    { key: "Team treating well", replies: ["All good", "Some friction but manageable", "Friction — needs attention"] },
+    { key: "Relationship with FP", replies: ["Good", "Could be better", "Needs improvement"] }
+  ]},
+  { label: "Carga de trabajo y horas", items: [
+    { key: "Workload lately", replies: ["Manageable", "A bit heavy but OK", "Overloaded"] },
+    { key: "Time tracker up to date (reminder: approval deadline)", replies: ["Up to date", "Needs to update — reminded"] },
+    { key: "Extra hours", replies: ["No extra hours", "Some extra hours — justified", "Recurring extra hours"] },
+    { key: "Personal project aside from this one", replies: ["No", "Yes — disclosed"] }
+  ]},
+  { label: "Feedback", items: [
+    { key: "Feedback for me or BairesDev", replies: ["No feedback at this time", "Has positive feedback", "Has constructive feedback"] }
+  ]},
+  { label: "Cambios y tech stack", items: [
+    { key: "FP reported changes in role", replies: ["No changes", "Changes reported — noted"] },
+    { key: "Changes in tech or methodologies", replies: ["No changes", "Changes reported — adapted"] },
+    { key: "Working out of tech stack", replies: ["No", "Yes — within comfort zone", "Yes — needs support"] },
+    { key: "Training or support needed", replies: ["No", "Yes — has access", "Yes — support requested"] }
+  ]}
+];
+const ALL_ITEMS = SECTIONS.flatMap(s => s.items.map(i => i.key));
+const ITEM_MAP = {};
+SECTIONS.forEach(s => s.items.forEach(i => { ITEM_MAP[i.key] = i; }));
+const TOTAL = ALL_ITEMS.length;
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let meetings = [];
+let activeId = null;
+let activeSummary = '';
+let summaryLoading = false;
+let summaryError = '';
+let transcriptLoading = false;
+let transcriptInsights = '';
+let transcriptError = '';
+
+// ─── Storage ──────────────────────────────────────────────────────────────────
+function load() {
+  try { meetings = JSON.parse(localStorage.getItem('bd_meetings') || '[]'); } catch(e) { meetings = []; }
+}
+function save() {
+  localStorage.setItem('bd_meetings', JSON.stringify(meetings));
+}
+function getApiKey() { return localStorage.getItem('bd_api_key') || ''; }
+function saveApiKeyToStorage(k) { localStorage.setItem('bd_api_key', k); }
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function initials(n) { return n.trim().split(/\s+/).map(w => w[0].toUpperCase()).slice(0,2).join(''); }
+function fmt(d) { return new Date(d).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escJ(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function iid(item) { return 'ck' + Math.abs(item.split('').reduce((a,c) => ((a<<5)-a)+c.charCodeAt(0)|0, 0)); }
+function progress(m) {
+  const done = ALL_ITEMS.filter(i => m.checks[i]).length;
+  return { done, pct: Math.round(done / TOTAL * 100) };
+}
+function getM() { return meetings.find(x => x.id === activeId); }
+
+// ─── API Key ──────────────────────────────────────────────────────────────────
+function updateApiDot() {
+  const dot = document.getElementById('api-dot');
+  if (dot) dot.className = 'api-dot' + (getApiKey() ? ' ok' : '');
+}
+function openApiModal() {
+  document.getElementById('api-key-input').value = getApiKey();
+  document.getElementById('api-modal').style.display = 'flex';
+}
+function closeApiModal() { document.getElementById('api-modal').style.display = 'none'; }
+function saveApiKey() {
+  const k = document.getElementById('api-key-input').value.trim();
+  saveApiKeyToStorage(k);
+  updateApiDot();
+  closeApiModal();
+}
+
+// ─── Meetings CRUD ────────────────────────────────────────────────────────────
+function openNewMeetingModal() {
+  document.getElementById('se-name-input').value = '';
+  document.getElementById('new-meeting-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('se-name-input').focus(), 50);
+}
+function closeNewMeetingModal() { document.getElementById('new-meeting-modal').style.display = 'none'; }
+function createMeeting() {
+  const name = document.getElementById('se-name-input').value.trim();
+  if (!name) return;
+  const id = Date.now().toString();
+  const m = { id, name, date: new Date().toISOString(), checks: {}, replies: {}, notes: {}, summary: '', transcript: '' };
+  ALL_ITEMS.forEach(item => { m.checks[item] = false; m.replies[item] = ''; m.notes[item] = ''; });
+  meetings.unshift(m);
+  save();
+  closeNewMeetingModal();
+  openMeeting(id);
+  renderSidebar();
+}
+
+function openMeeting(id) {
+  activeId = id;
+  activeSummary = getM()?.summary || '';
+  summaryLoading = false; summaryError = '';
+  transcriptLoading = false; transcriptInsights = getM()?.transcriptInsights || ''; transcriptError = '';
+  renderMain();
+  renderSidebar();
+}
+
+// ─── Interactions ─────────────────────────────────────────────────────────────
+function selectReply(item, reply) {
+  const m = getM(); if (!m) return;
+  m.replies[item] = m.replies[item] === reply ? '' : reply;
+  m.checks[item] = !!m.replies[item];
+  save(); renderMain();
+}
+function toggleCheck(item) {
+  const m = getM(); if (!m) return;
+  m.checks[item] = !m.checks[item];
+  if (!m.checks[item]) m.replies[item] = '';
+  save(); renderMain();
+}
+function updateNote(item, val) {
+  const m = getM(); if (!m) return;
+  m.notes[item] = val; save();
+}
+function updateTranscript(val) {
+  const m = getM(); if (!m) return;
+  m.transcript = val; save();
+}
+function resetMeeting() {
+  const m = getM(); if (!m) return;
+  ALL_ITEMS.forEach(item => { m.checks[item] = false; m.replies[item] = ''; m.notes[item] = ''; });
+  m.date = new Date().toISOString(); m.summary = ''; m.transcript = ''; m.transcriptInsights = '';
+  activeSummary = ''; transcriptInsights = ''; summaryError = ''; transcriptError = '';
+  save(); renderMain(); renderSidebar();
+}
+
+// ─── AI calls ─────────────────────────────────────────────────────────────────
+async function callAPI(messages, maxTokens) {
+  const key = getApiKey();
+  if (!key) throw new Error('No API key set. Click "API Key" in the top bar to add yours.');
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'anthropic-version': '2023-06-01',
+      'x-api-key': key
+    },
+    body: JSON.stringify({ model: 'claude-opus-4-5', max_tokens: maxTokens, messages })
+  });
+  if (!resp.ok) {
+    const t = await resp.text();
+    let msg = `HTTP ${resp.status}`;
+    try { const j = JSON.parse(t); msg = j.error?.message || msg; } catch(e) {}
+    throw new Error(msg);
+  }
+  const data = await resp.json();
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+}
+
+async function analyzeTranscript() {
+  const m = getM(); if (!m) return;
+  const transcript = m.transcript?.trim();
+  if (!transcript) return;
+  transcriptLoading = true; transcriptInsights = ''; transcriptError = '';
+  renderMain();
+  try {
+    const prompt = `You are an assistant helping an engineering manager prepare for a 1:1 meeting with a software engineer at BairesDev.
+
+Below is the transcript from a PREVIOUS meeting. Based on it, extract:
+1. Open items or follow-ups that were not resolved
+2. Topics that should be revisited
+3. Any red flags or concerns raised
+4. Positive highlights worth acknowledging again
+
+Format your response clearly with short bullet points under each heading. Be concise and actionable. Write entirely in English.
+
+TRANSCRIPT:
+${transcript}`;
+    const result = await callAPI([{ role: 'user', content: prompt }], 800);
+    transcriptInsights = result;
+    m.transcriptInsights = result;
+    save();
+  } catch(e) { transcriptError = e.message || String(e); }
+  transcriptLoading = false;
+  renderMain();
+}
+
+async function generateSummary() {
+  const m = getM(); if (!m) return;
+  summaryLoading = true; summaryError = ''; activeSummary = '';
+  renderMain();
+
+  let prompt = `You are an assistant helping an engineering manager document a 1:1 meeting for upload to an ERP system.
+
+RULES:
+- Write the ENTIRE summary in English.
+- Keep section headers in their original Spanish names (Apertura, Asignación y equipo, etc.) as they match ERP fields.
+- Professional, concise, third-person style.
+- Bullet points within each section.
+- Combine the quick reply and additional comments into one coherent bullet per item.
+- Only include items that were checked or have content.
+- End with this exact closing line: "That's all from my side — thank you so much for your time and openness! It was great talking with you. Talk soon, and keep up the great work!"
+
+SE Name: ${m.name}
+Date: ${fmt(m.date)}
+
+`;
+  SECTIONS.forEach(s => {
+    const relevant = s.items.filter(i => m.checks[i.key] || m.replies[i.key] || m.notes[i.key]);
+    if (relevant.length) {
+      prompt += `## ${s.label}\n`;
+      relevant.forEach(({ key }) => {
+        const reply = m.replies[key] || '';
+        const note = m.notes[key] || '';
+        const combined = [reply, note].filter(Boolean).join(' — ');
+        prompt += `- ${key}${combined ? ': ' + combined : ''}\n`;
+      });
+      prompt += '\n';
+    }
+  });
+  const notDiscussed = ALL_ITEMS.filter(i => !m.checks[i] && !m.replies[i] && !m.notes[i]);
+  if (notDiscussed.length) prompt += `Items not discussed or N/A: ${notDiscussed.join(', ')}\n`;
+
+  try {
+    const result = await callAPI([{ role: 'user', content: prompt }], 1000);
+    activeSummary = result; m.summary = result; save();
+  } catch(e) { summaryError = e.message || String(e); }
+  summaryLoading = false;
+  renderMain(); renderSidebar();
+}
+
+function copySummary() {
+  navigator.clipboard.writeText(activeSummary).then(() => {
+    const btn = document.getElementById('copy-btn');
+    if (btn) { btn.textContent = '✓ Copied!'; setTimeout(() => { btn.textContent = 'Copy to clipboard'; }, 2000); }
+  });
+}
+
+// ─── Render Sidebar ───────────────────────────────────────────────────────────
+function renderSidebar() {
+  const el = document.getElementById('meeting-list');
+  if (!meetings.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px">No meetings yet.</div>'; return; }
+  el.innerHTML = meetings.map(m => {
+    const { done, pct } = progress(m);
+    return `<div class="meeting-item${m.id === activeId ? ' active' : ''}" onclick="openMeeting('${m.id}')">
+      <div class="mi-name">${esc(m.name)}</div>
+      <div class="mi-meta">
+        <span>${fmt(m.date)}</span>
+        ${m.summary ? '<span class="mi-badge">✓ summary</span>' : ''}
+      </div>
+      <div class="pb-wrap"><div class="pb" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Render Main ─────────────────────────────────────────────────────────────
+function renderMain() {
+  const area = document.getElementById('main-area');
+  const m = getM();
+  if (!m) {
+    area.innerHTML = `<div class="main-empty"><div class="big-icon">💬</div><p>Select a meeting or create a new one<br>to get started.</p></div>`;
+    return;
+  }
+  const { done, pct } = progress(m);
+
+  let html = `
+  <!-- Meeting header -->
+  <div class="meeting-header">
+    <div class="avatar-lg">${esc(initials(m.name))}</div>
+    <div>
+      <div class="mh-name">${esc(m.name)}</div>
+      <div class="mh-meta">${fmt(m.date)}</div>
+    </div>
+    <div class="mh-progress">
+      <div class="mh-pct">${pct}%</div>
+      <div class="mh-label">${done} / ${TOTAL} items</div>
+    </div>
+  </div>
+
+  <!-- Transcript section -->
+  <div class="card">
+    <div class="card-title">Previous meeting transcript</div>
+    <textarea class="transcript-area" id="transcript-ta" rows="4" placeholder="Paste the transcript from the previous meeting here, or upload a .txt file..."
+      oninput="updateTranscript(this.value)">${esc(m.transcript || '')}</textarea>
+    <div class="transcript-actions">
+      <label class="file-label">
+        📎 Upload .txt
+        <input type="file" class="file-input" accept=".txt" onchange="handleFileUpload(event)">
+      </label>
+      ${transcriptLoading
+        ? `<button class="btn-accent" disabled><span class="spinner"></span> Analyzing...</button>`
+        : `<button class="btn-accent" onclick="analyzeTranscript()">✦ Analyze transcript</button>`}
+    </div>
+    ${transcriptError ? `<div class="err-box">Error: ${esc(transcriptError)}</div>` : ''}
+    ${transcriptInsights ? `<div class="insights-box" id="insights-box">${formatInsights(transcriptInsights)}</div>` : ''}
+  </div>
+
+  <!-- Checklist -->
+  <div class="card">`;
+
+  SECTIONS.forEach(s => {
+    html += `<div class="section-label">✦ ${esc(s.label)}</div>`;
+    s.items.forEach(({ key, replies }) => {
+      const checked = m.checks[key];
+      const selectedReply = m.replies[key] || '';
+      const note = m.notes[key] || '';
+      const cid = iid(key);
+      html += `<div class="check-item${checked ? ' checked' : ''}">
+        <div class="check-row">
+          <input type="checkbox" id="${cid}" ${checked ? 'checked' : ''} onchange="toggleCheck('${escJ(key)}')">
+          <label class="check-label" for="${cid}">${esc(key)}</label>
+        </div>
+        <div class="quick-replies">`;
+      replies.forEach(r => {
+        html += `<button class="qr-btn${selectedReply === r ? ' selected' : ''}" onclick="selectReply('${escJ(key)}','${escJ(r)}')">${esc(r)}</button>`;
+      });
+      html += `</div>
+        <textarea class="note-input" rows="1" placeholder="Additional comments..."
+          oninput="autoResize(this);updateNote('${escJ(key)}',this.value)">${esc(note)}</textarea>
+      </div>`;
+    });
+  });
+
+  html += `<div class="closing">That's all from my side — thank you so much for your time and openness! It was great talking with you. Talk soon, and keep up the great work!</div>
+  </div>`;
+
+  // Summary button
+  if (summaryLoading) {
+    html += `<button class="btn-summary" disabled><span class="spinner"></span> Generating summary...</button>`;
+  } else {
+    html += `<button class="btn-summary" onclick="generateSummary()">✦ Generate ERP summary</button>`;
+  }
+  if (summaryError) html += `<div class="err-box">Error: ${esc(summaryError)}</div>`;
+  if (activeSummary) {
+    html += `<div class="summary-box">
+      <div class="summary-label">Meeting summary — ready to copy</div>
+      <div class="summary-text">${esc(activeSummary)}</div>
+      <button class="copy-btn" id="copy-btn" onclick="copySummary()">Copy to clipboard</button>
+    </div>`;
+  }
+
+  html += `<button class="reset-btn" onclick="if(confirm('Reset this meeting? All data will be cleared.'))resetMeeting()">Reset checklist</button>
+  <div style="height:3rem"></div>`;
+
+  area.innerHTML = html;
+  area.querySelectorAll('.note-input').forEach(ta => autoResize(ta));
+}
+
+function formatInsights(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^#{1,3}\s+(.+)$/gm, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function autoResize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    const m = getM(); if (!m) return;
+    m.transcript = text; save();
+    const ta = document.getElementById('transcript-ta');
+    if (ta) { ta.value = text; autoResize(ta); }
+  };
+  reader.readAsText(file);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeApiModal();
+    closeNewMeetingModal();
+  }
+  if (e.key === 'Enter' && document.getElementById('new-meeting-modal').style.display === 'flex') {
+    createMeeting();
+  }
+});
+
+load();
+updateApiDot();
+renderSidebar();
+</script>
+</body>
+</html>
