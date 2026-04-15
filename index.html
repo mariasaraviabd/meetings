@@ -934,8 +934,8 @@ function renderMain() {
       oninput="updateTranscript(this.value)">${esc(m.transcript || '')}</textarea>
     <div class="transcript-actions">
       <label class="file-label">
-        📎 Upload .txt
-        <input type="file" class="file-input" accept=".txt" onchange="handleFileUpload(event)">
+        📎 Upload .txt / .vtt
+        <input type="file" class="file-input" accept=".txt,.vtt" onchange="handleFileUpload(event)">
       </label>
       ${transcriptLoading
         ? `<button class="btn-accent" disabled><span class="spinner"></span> Analyzing...</button>`
@@ -1005,12 +1005,40 @@ function formatInsights(text) {
 
 function autoResize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
 
+function parseVTT(raw) {
+  const lines = raw.split('\n');
+  const result = [];
+  let lastSpeaker = '';
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line || line === 'WEBVTT') continue;
+    if (/^\d+$/.test(line)) continue;
+    if (/^\d{2}:\d{2}[\d:.,]+ -->/.test(line)) continue;
+    const speakerMatch = line.match(/^([^:]+):\s*(.+)/);
+    if (speakerMatch) {
+      const speaker = speakerMatch[1].trim();
+      const text = speakerMatch[2].trim();
+      if (speaker === lastSpeaker && result.length > 0) {
+        result[result.length - 1] += ' ' + text;
+      } else {
+        result.push(speaker + ': ' + text);
+        lastSpeaker = speaker;
+      }
+    } else if (line) {
+      if (result.length > 0) result[result.length - 1] += ' ' + line;
+      else result.push(line);
+    }
+  }
+  return result.join('\n');
+}
+
 function handleFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
-    const text = e.target.result;
+    const raw = e.target.result;
+    const text = file.name.toLowerCase().endsWith('.vtt') ? parseVTT(raw) : raw;
     const m = getM(); if (!m) return;
     m.transcript = text; save();
     const ta = document.getElementById('transcript-ta');
