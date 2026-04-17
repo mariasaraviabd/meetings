@@ -740,9 +740,7 @@ function renderON(){
   document.getElementById('vr').innerHTML=`<div class="page">
   <div class="meta-grid">
     <div class="fld"><label>Team Member</label><input type="text" id="on-person" placeholder="e.g. Carlos López"></div>
-    <div class="fld"><label>Role</label><input type="text" id="on-role" placeholder="e.g. Sr. Developer"></div>
     <div class="fld"><label>Date</label><input type="date" id="on-date"></div>
-    <div class="fld"><label>Meeting #</label><input type="number" id="on-num" placeholder="e.g. 12" min="1"></div>
   </div>
  
   <!-- Transcript -->
@@ -757,49 +755,138 @@ function renderON(){
     </div>
   </div>
  
-  <!-- CHECK-IN -->
+  <!-- OPENING: FP FEEDBACK -->
   <div class="sc">
-    <div class="sc-hdr"><span class="sc-tag purple">Check-in</span><span class="sc-ttl">How are you doing?</span></div>
-    <div class="qw">
-      <div class="ql"><span class="qi">1.1</span>Overall mood / energy this week (1–10)</div>
-      <div class="mood-row">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button class="rate-btn" data-v="${n}">${n}</button>`).join('')}</div>
-      <div class="mood-labels"><span>Low energy</span><span>High energy</span></div>
-      <textarea class="cmt" id="c-on1" placeholder="Any context…"></textarea>
+    <div class="sc-hdr"><span class="sc-tag purple">Opening</span><span class="sc-ttl">Focal Point Feedback</span></div>
+    <div class="qw" style="border-bottom:none">
+      <div class="ql" style="font-style:italic;color:var(--text2);font-size:13px;margin-bottom:10px">"Let me start by giving you feedback from your Focal Point…"</div>
+      <div class="ql"><span class="qi">1.1</span>Overall FP feedback sentiment</div>
+      <div class="br">
+        <button class="ab g" data-q="on-q0" data-v="Positive feedback from FP">Positive feedback</button>
+        <button class="ab y" data-q="on-q0" data-v="Mixed feedback from FP">Mixed feedback</button>
+        <button class="ab r" data-q="on-q0" data-v="Concerns raised by FP">Concerns raised</button>
+        <button class="ab b" data-q="on-q0" data-v="No specific feedback this cycle">No specific feedback this cycle</button>
+      </div>
+      <textarea class="cmt" id="c-on-q0" placeholder="Detail the feedback shared — highlights, concerns, quotes…" style="min-height:72px"></textarea>
     </div>
   </div>
  
-  <!-- WORK -->
+  <!-- RESPONSIBILITIES -->
   <div class="sc">
-    <div class="sc-hdr"><span class="sc-tag purple">Work</span><span class="sc-ttl">Work Updates &amp; Priorities</span></div>
-    ${qon('on-q1','2.1','How are current projects and priorities going?',[{c:'g',v:'On track, no issues'},{c:'y',v:'Minor delays / adjustments'},{c:'r',v:'Behind schedule or blocked'}],'Project/priority details…')}
-    ${qon('on-q2','2.2','Are there any priorities that shifted since the last 1:1?',[{c:'b',v:'New priority assigned'},{c:'y',v:'Existing priority reprioritized'},{c:'g',v:'No changes, all stable'}])}
+    <div class="sc-hdr"><span class="sc-tag purple">Role</span><span class="sc-ttl">Responsibilities &amp; Role Changes</span></div>
+    ${qon('on-q1','2.1','Have you been given any monitoring or coordination responsibilities recently?',[
+      {c:'g',v:'No changes — same responsibilities'},
+      {c:'b',v:'Yes — new monitoring responsibilities'},
+      {c:'b',v:'Yes — coordination role added'},
+      {c:'y',v:'Not yet but expected soon'}
+    ],'Describe new responsibilities or scope changes…')}
+    ${qon('on-q2','2.2','Has your FP reported or mentioned any changes regarding your role or responsibilities?',[
+      {c:'g',v:'No changes reported'},
+      {c:'b',v:'Minor adjustments mentioned'},
+      {c:'y',v:'Significant role changes coming'},
+      {c:'r',v:'Negative feedback on current role fit'}
+    ],'What changes were mentioned?')}
+  </div>
+ 
+  <!-- PROJECT & TEAM -->
+  <div class="sc">
+    <div class="sc-hdr"><span class="sc-tag purple">Project</span><span class="sc-ttl">Project &amp; Team Environment</span></div>
+    ${qon('on-q3','3.1','How are you feeling about the project overall?',[
+      {c:'g',v:'Very positive — engaged and motivated'},
+      {c:'g',v:'Good — stable and on track'},
+      {c:'y',v:'Neutral — some concerns'},
+      {c:'r',v:'Not happy — needs attention'}
+    ],'Any context on project satisfaction?')}
+    ${qon('on-q4','3.2','Is everyone on the team treating you well?',[
+      {c:'g',v:'Yes — great team dynamic'},
+      {c:'y',v:'Mostly yes — minor friction'},
+      {c:'r',v:'No — issues to address'}
+    ],'Describe any interpersonal concerns…')}
+    ${qon('on-q5','3.3','How\'s your relationship with your Focal Point?',[
+      {c:'g',v:'Strong and positive'},
+      {c:'g',v:'Professional and stable'},
+      {c:'y',v:'Neutral — limited interaction'},
+      {c:'r',v:'Needs improvement'}
+    ],'Any context on the FP relationship?')}
   </div>
  
   <!-- BLOCKERS -->
   <div class="sc">
-    <div class="sc-hdr"><span class="sc-tag purple">Blockers</span><span class="sc-ttl">Challenges &amp; Support Needed</span></div>
-    ${qon('on-q3','3.1','Are there blockers or dependencies that need escalation?',[{c:'g',v:'No blockers currently'},{c:'y',v:'Minor — handling it'},{c:'r',v:'Needs escalation / help'}],'Describe blocker and who can unblock…')}
-    ${qon('on-q4','3.2','Is there anything the team could do better to support this person?',[{c:'g',v:'Well supported'},{c:'y',v:'Some gaps identified'},{c:'r',v:'Significant support gap'}])}
+    <div class="sc-hdr"><span class="sc-tag purple">Blockers</span><span class="sc-ttl">Blockers &amp; Issues</span></div>
+    ${qon('on-q6','4.1','Do you currently have any blockers or issues that might be affecting your work?',[
+      {c:'g',v:'No blockers'},
+      {c:'y',v:'Minor issues — handling it'},
+      {c:'r',v:'Active blocker — needs action'}
+    ],'Describe the blocker and what\'s needed to unblock…')}
+    ${qon('on-q7','4.2','Has there been any changes in tech or methodologies?',[
+      {c:'g',v:'No changes'},
+      {c:'b',v:'New tools or libraries adopted'},
+      {c:'b',v:'Methodology shift (Agile, Scrum, etc.)'},
+      {c:'y',v:'Major tech change — needs support'}
+    ],'What changed? Any adaptation needed?')}
+    ${qon('on-q8','4.3','Are you working on any project which is out of your tech stack?',[
+      {c:'g',v:'No — working within my stack'},
+      {c:'y',v:'Partially — learning some new tech'},
+      {c:'r',v:'Yes — mostly out of stack'}
+    ],'Which technologies? Is training needed?')}
   </div>
  
-  <!-- PERFORMANCE -->
+  <!-- WORKLOAD & HOURS -->
   <div class="sc">
-    <div class="sc-hdr"><span class="sc-tag purple">Performance</span><span class="sc-ttl">Performance &amp; Feedback Exchange</span></div>
-    ${qon('on-q5','4.1','How is this person performing against their goals / expectations?',[{c:'g',v:'Exceeding expectations'},{c:'g',v:'Meeting expectations'},{c:'y',v:'Partially meeting expectations'},{c:'r',v:'Below expectations'}],'Specific examples or observations…')}
-    <div class="qw"><div class="ql"><span class="qi">4.2</span>Upward feedback from team member</div><textarea class="cmt" id="c-on-fb" placeholder="What feedback did they give you or the company…" style="min-height:68px"></textarea></div>
+    <div class="sc-hdr"><span class="sc-tag purple">Workload</span><span class="sc-ttl">Workload &amp; Hours</span></div>
+    ${qon('on-q9','5.1','What about the workload — how has it been these days?',[
+      {c:'g',v:'Well balanced'},
+      {c:'y',v:'Heavy but manageable'},
+      {c:'r',v:'Overloaded'},
+      {c:'b',v:'Light — could take on more'}
+    ],'Any context on workload distribution?')}
+    ${qon('on-q10','5.2','Have you been doing any extra hours lately?',[
+      {c:'g',v:'No extra hours'},
+      {c:'y',v:'Occasional overtime'},
+      {c:'r',v:'Frequent overtime — recurring'}
+    ],'Approx. how many extra hours per week? Any reason?')}
+    <div class="qw">
+      <div class="ql"><span class="qi">5.3</span>Is your time tracker up to date?</div>
+      <div class="br">
+        <button class="ab g" data-q="on-q11" data-v="Yes — fully up to date">Yes — fully up to date</button>
+        <button class="ab r" data-q="on-q11" data-v="No — needs updating">No — needs updating</button>
+        <button class="ab y" data-q="on-q11" data-v="Partially updated">Partially updated</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;padding:6px 10px;background:var(--orange-light);border-radius:6px;border-left:3px solid var(--orange-mid)">
+        📅 Reminder: the last day to submit approval requests is the day prior to the end of the month.
+      </div>
+      <textarea class="cmt" id="c-on-q11" placeholder="Any notes on time tracking…"></textarea>
+    </div>
   </div>
  
-  <!-- GROWTH -->
+  <!-- PERSONAL PROJECTS & FEEDBACK -->
   <div class="sc">
-    <div class="sc-hdr"><span class="sc-tag purple">Growth</span><span class="sc-ttl">Career &amp; Development</span></div>
-    ${qon('on-q6','5.1','Is this person on track with their career development goals?',[{c:'g',v:'Progressing well'},{c:'y',v:'Some areas to develop'},{c:'r',v:'Stalled — needs plan'}],'Skills, goals, training opportunities…')}
-    ${qon('on-q7','5.2','Overall engagement and retention risk?',[{c:'g',v:'Highly engaged, no risk'},{c:'y',v:'Engaged but watch for signals'},{c:'r',v:'Disengaged / flight risk'}])}
+    <div class="sc-hdr"><span class="sc-tag purple">Extras</span><span class="sc-ttl">Personal Projects &amp; Feedback</span></div>
+    ${qon('on-q12','6.1','Are you currently working on any personal project aside from this one?',[
+      {c:'g',v:'No — fully focused on this project'},
+      {c:'b',v:'Yes — not affecting my work'},
+      {c:'y',v:'Yes — might affect availability'}
+    ],'Describe the personal project if relevant…')}
+    ${qon('on-q13','6.2','Do you have any feedback for me or for BairesDev in general?',[
+      {c:'g',v:'No feedback right now — all good'},
+      {c:'b',v:'Positive feedback to share'},
+      {c:'y',v:'Constructive feedback / suggestions'}
+    ],'What\'s the feedback?')}
   </div>
  
-  <!-- CLOSURE -->
+  <!-- TRAINING & CLOSURE -->
   <div class="sc">
-    <div class="sc-hdr"><span class="sc-tag purple">Closure</span><span class="sc-ttl">Action Items &amp; Next Steps</span></div>
-    ${qon('on-q8','6.1','Were action items and commitments agreed?',[{c:'g',v:'Yes, all defined with owners'},{c:'y',v:'Partially defined'},{c:'r',v:'Not defined'}],'List action items, owners, deadlines…')}
+    <div class="sc-hdr"><span class="sc-tag purple">Closure</span><span class="sc-ttl">Training &amp; Closing</span></div>
+    ${qon('on-q14','7.1','Is there any training or support you feel you need at this point?',[
+      {c:'g',v:'No — I\'m good'},
+      {c:'b',v:'Some training identified'},
+      {c:'y',v:'Yes — specific support needed urgently'}
+    ],'What type of training or support?')}
+    <div class="qw" style="border-bottom:none">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.7;font-style:italic">
+        "That's all from my side — thank you so much for your time and openness!<br>It was great talking with you. Talk soon, and keep up the great work!"
+      </div>
+    </div>
   </div>
  
   <div class="save-bar">
@@ -822,8 +909,8 @@ async function analyzeON(){
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,
-        system:`You are a manager reviewing previous 1:1 notes. Generate 4–6 talking points for the NEXT 1:1: unresolved action items, growth areas, performance feedback to give, engagement signals, blockers mentioned. Return ONLY a JSON array of strings. No markdown.`,
-        messages:[{role:'user',content:`Notes:\n\n${tx}\n\nReturn as JSON array.`}]})
+        system:`You are a BairesDev Business Manager reviewing previous 1:1 notes with a team member. Generate 4–6 concise talking points for the NEXT 1:1 session. Focus on: unresolved action items, blockers or risks mentioned, feedback to follow up on, workload signals, role or tech changes flagged, training needs. Return ONLY a valid JSON array of strings. No markdown, no preamble. Max 130 chars per item. Start each item with an action verb or keyword.`,
+        messages:[{role:'user',content:`Previous 1:1 notes:\n\n${tx}\n\nReturn talking points as a JSON array.`}]})
     });
     const data=await res.json();
     const raw=data.content?.find(b=>b.type==='text')?.text||'[]';
@@ -832,23 +919,22 @@ async function analyzeON(){
     fs.ins=pts;
     document.getElementById('ins-area').innerHTML=`<div class="ib purple">
       <div class="ib-ttl">Talking points for this 1:1</div>
-      ${pts.map(p=>`<div class="ii"><span class="id2">›</span><span>${esc(p)}</span></div>`).join('')}
+      ${pts.map(p=>`<div class="ii"><span class="id2" style="color:#7C3AED">›</span><span>${esc(p)}</span></div>`).join('')}
     </div>`;
   }catch(e){
-    document.getElementById('ins-area').innerHTML=`<div class="ib" style="background:#FEF2F2;border-color:var(--r-b)"><div class="ib-ttl" style="color:var(--r)">Analysis failed</div></div>`;
+    document.getElementById('ins-area').innerHTML=`<div class="ib" style="background:#FEF2F2;border-color:var(--r-b)"><div class="ib-ttl" style="color:var(--r)">Analysis failed — try again</div></div>`;
   }finally{btn.disabled=false;btn.innerHTML='✦ Analyze with AI ↗';}
 }
  
 function saveON(){
   const C={};document.querySelectorAll('.cmt[id^="c-"]').forEach(el=>{if(el.value.trim())C[el.id]=el.value.trim();});
-  const mb=document.querySelector('.rate-btn.on');
   const call={
     id:uid(),type:'on',savedAt:new Date().toISOString(),
     person:document.getElementById('on-person')?.value.trim()||'',
-    role:document.getElementById('on-role')?.value.trim()||'',
+    
     date:document.getElementById('on-date')?.value||'',
-    meetingNum:document.getElementById('on-num')?.value||'',
-    ans:{...fs.ans},cmt:C,mood:mb?parseInt(mb.dataset.v):null,ins:fs.ins||[]
+    
+    ans:{...fs.ans},cmt:C,ins:fs.ins||[]
   };
   call.summary=buildONSummary(call);
   calls.unshift(call);saveCalls();editId=call.id;renderSb();renderDetail(call);
@@ -860,15 +946,14 @@ function buildONSummary(c){
   const A=c.ans||{},C=c.cmt||{};
   const ln=(l,v,k)=>{let s=`- ${l}: ${v||'—'}`;if(k&&C[k])s+=`\n  → ${C[k]}`;return s;};
   let o=`${hr}\n  1:1 CHECK-IN — TEAM MEMBER\n${hr}\n`;
-  o+=`  Team Member : ${c.person||'—'}\n  Role        : ${c.role||'—'}\n  Date        : ${c.date||'—'}\n  Meeting #   : ${c.meetingNum||'—'}\n${hr2}\n\n`;
-  o+=`CHECK-IN\n${hr2}\n- Mood / energy: ${c.mood?c.mood+'/10':'—'}\n`;
-  if(C['c-on1'])o+=`  → ${C['c-on1']}\n`;
-  o+=`\nWORK & PRIORITIES\n${hr2}\n${ln('Projects & priorities',A['on-q1'],'c-on-q1')}\n${ln('Priority shifts',A['on-q2'],'c-on-q2')}\n`;
-  o+=`\nBLOCKERS & SUPPORT\n${hr2}\n${ln('Blockers',A['on-q3'],'c-on-q3')}\n${ln('Company support',A['on-q4'],'c-on-q4')}\n`;
-  o+=`\nPERFORMANCE & FEEDBACK\n${hr2}\n${ln('Performance vs. goals',A['on-q5'],'c-on-q5')}\n`;
-  if(C['c-on-fb'])o+=`- Upward feedback:\n  → ${C['c-on-fb']}\n`;
-  o+=`\nGROWTH & DEVELOPMENT\n${hr2}\n${ln('Career development',A['on-q6'],'c-on-q6')}\n${ln('Engagement / retention',A['on-q7'],'c-on-q7')}\n`;
-  o+=`\n${hr}\nCLOSURE\n${hr2}\n${ln('Action items',A['on-q8'],'c-on-q8')}\n`;
+  o+=`  Team Member : ${c.person||'—'}\n  Date        : ${c.date||'—'}\n${hr2}\n\n`;
+  o+=`OPENING — FP FEEDBACK\n${hr2}\n${ln('FP feedback sentiment',A['on-q0'],'c-on-q0')}\n`;
+  o+=`\nROLE & RESPONSIBILITIES\n${hr2}\n${ln('New monitoring / coordination responsibilities',A['on-q1'],'c-on-q1')}\n${ln('FP-reported role changes',A['on-q2'],'c-on-q2')}\n`;
+  o+=`\nPROJECT & TEAM ENVIRONMENT\n${hr2}\n${ln('Feeling about project',A['on-q3'],'c-on-q3')}\n${ln('Team dynamics',A['on-q4'],'c-on-q4')}\n${ln('Relationship with Focal Point',A['on-q5'],'c-on-q5')}\n`;
+  o+=`\nBLOCKERS & TECH\n${hr2}\n${ln('Blockers / issues',A['on-q6'],'c-on-q6')}\n${ln('Tech or methodology changes',A['on-q7'],'c-on-q7')}\n${ln('Working outside tech stack',A['on-q8'],'c-on-q8')}\n`;
+  o+=`\nWORKLOAD & HOURS\n${hr2}\n${ln('Workload balance',A['on-q9'],'c-on-q9')}\n${ln('Extra hours',A['on-q10'],'c-on-q10')}\n${ln('Time tracker status',A['on-q11'],'c-on-q11')}\n`;
+  o+=`\nEXTRAS\n${hr2}\n${ln('Personal projects',A['on-q12'],'c-on-q12')}\n${ln('Feedback for BM / BairesDev',A['on-q13'],'c-on-q13')}\n`;
+  o+=`\n${hr}\nCLOSURE\n${hr2}\n${ln('Training / support needed',A['on-q14'],'c-on-q14')}\n`;
   return o;
 }
  
